@@ -18,6 +18,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         return res.status(404).json({message: 'unable to find token with id:' + req.query['id']})
     }
 
+    if (tokenPath.key !== req.query['key']) {
+        return res.status(403).json({message: 'Wrong key for id' + req.query['id']})
+    }
+
     const snapshot = await db.collection('users').doc(tokenPath.user).collection('tokens').doc(tokenPath.token).get();
 
 
@@ -34,6 +38,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   var tokenResponse = await axios.post('https://oauth2.googleapis.com/token', querystring.stringify(requestObject));
   res.status(200).json(tokenResponse.data)
 } catch (e) {
-    res.status(501).json({error: e.message})
+    res.status(501).json({error: e.message, stack: e.stack})
 }
 }
