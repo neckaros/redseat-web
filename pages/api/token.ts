@@ -7,7 +7,7 @@ import firebase from '../../lib/firebase';
 const isString = (object) => typeof object === 'string' || object instanceof String;
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-
+    try {
     if (!isString(req.query['id']) && !isString(req.query['key'])) {
         return res.status(501).json({message: 'you must provide an id and a key'})
     }
@@ -33,4 +33,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   var tokenResponse = await axios.post('https://oauth2.googleapis.com/token', querystring.stringify(requestObject));
   res.status(200).json(tokenResponse.data)
+} catch (e) {
+    res.status(501).json({error: e.message})
+}
 }
