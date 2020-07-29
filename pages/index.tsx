@@ -2,6 +2,8 @@ import Head from 'next/head'
 import useSWR from 'swr'
 import axios from 'axios'
 import { useRouter } from 'next/router'
+import CardGrid from '../components/card-grid'
+import CardDownload from '../components/card-download'
 
 const useDownloads = () => {
   const { data, error } = useSWR('https://localhost:5001/download', axios);
@@ -16,7 +18,10 @@ const NumberOfDownloads = () => {
   if (error) return <div>failed to load</div>
   if (!downloads) return <div>loading...</div>
 
-  return <p className="description">{downloads.length} Downloads</p>;
+  return <CardGrid count={downloads.length} builder={(i) => <CardDownload download={{
+    ...downloads[i],
+    image: 'https://artworks.thetvdb.com/banners/posters/121361-4.jpg'
+  }}/>}  />;
 }
 
 const Home = () => {

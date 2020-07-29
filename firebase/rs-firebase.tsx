@@ -1,6 +1,7 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import React, { useState, useEffect, useCallback } from 'react';
+import Axios from 'axios';
 const config = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -14,7 +15,7 @@ if (!firebase.apps.length) {
 }
 const auth = firebase.auth();
 
-const defaultUser = { loggedIn: false, email: "" };
+const defaultUser = { loggedIn: undefined, email: "" };
 const UserContext = React.createContext({});
 const UserProvider = UserContext.Provider;
 const UserConsumer = UserContext.Consumer;
@@ -51,6 +52,8 @@ const useFirebaseAuth = () => {
 function onAuthStateChange(callback) {
   return firebase.auth().onAuthStateChanged(user => {
     if (user) {
+      user.getIdToken().then((t) => Axios.get(`https://localhost:5001/user/verify?token=${t}`))
+      
       callback({loggedIn: true, email: user.email});
     } else {
       callback({loggedIn: false});
